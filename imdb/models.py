@@ -29,3 +29,6 @@ class Movie(models.Model):
 
 	def __unicode__(self):
 		return self.name
+
+	def get_absolute_url(self):
+		return ('movie_instance',(),{'pk':self.pk})
