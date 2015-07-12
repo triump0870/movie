@@ -1,6 +1,7 @@
 # from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import Movie, Director, Genre
+from .models import Movie, Genre
+from django.utils import six
 # serializers define the API representation.
 # class UserSerializer(serializers.HyperlinkedModelSerializer):
 # 	class Meta:
@@ -13,26 +14,20 @@ from .models import Movie, Director, Genre
 # 		model = Group
 # 		fields = ('url', 'name')
 
+class MyPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+	"""
+	Overrides to_representation() method.
+	"""
+
+	def to_representation(self, value):
+		return str(value) # Now returns the string representation instead of pk
+
 class MovieSerializer(serializers.ModelSerializer):
 	"""
 	Serialiazing all the Movies.
 	"""
-	# search_url = serializers.SerializerMethodField('get_search_url')
-	genre = serializers.PrimaryKeyRelatedField(many=True, queryset=Genre.objects.all())
-	directorName = serializers.PrimaryKeyRelatedField(queryset=Director.objects.all())
+	genre = MyPrimaryKeyRelatedField(many=True, queryset=Genre.objects.all())
 	owner = serializers.ReadOnlyField(source='owner.username')
 	class Meta:
 		model = Movie
-		fields = ('popularity',"directorName",'genre','imdbScore','name','owner')
-
-	# def get_search_url(self, obj):
-	# 	return 'http://www.imdb.com/title/{}'.format(obj.name)
-
-class DirectorSerializer(serializers.ModelSerializer):
-	"""
-	Serialiazing all the directors.
-	"""
-	movies = serializers.PrimaryKeyRelatedField(many=True, queryset=Movie.objects.all())
-	class Meta:
-		model = Director
-		fields = ('name','movies')
+		fields = ('popularity','directorName', 'genre','imdbScore','name','owner')

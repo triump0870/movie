@@ -5,22 +5,22 @@ from imdb import models
 
 
 admin.site.register(models.Genre)
-class DirectorAdmin(admin.ModelAdmin):
-	"""
-	Admin model for Direcctor objects.
-	"""
-	list_display = ['name','movies']
-	list_display_links = ['name']
-	list_filter = ['name','movies']
+# class DirectorAdmin(admin.ModelAdmin):
+# 	"""
+# 	Admin model for Direcctor objects.
+# 	"""
+# 	# list_display = ['name']
+# 	# list_display_links = ['name']
+# 	list_filter = ['name']
 
-admin.site.register(models.Director, DirectorAdmin)
+# admin.site.register(models.Director, DirectorAdmin)
 
 class MovieAdmin(admin.ModelAdmin):
 	"""
 	Model Admin for Movie objects.
 	"""
-	list_display = ['name','directorName','imdbScore', 'releaseDate']
-	list_display_links = ['name','directorName']
-	list_filter = ['name','directorName','releaseDate']
+	list_display = ['name','imdbScore', 'releaseDate']
+	list_display_links = ['name']
+	list_filter = ['name','releaseDate']
 
 admin.site.register(models.Movie, MovieAdmin)
