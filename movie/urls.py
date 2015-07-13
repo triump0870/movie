@@ -13,34 +13,25 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
+from django.conf.urls import include, url, patterns
 from django.contrib import admin
-# from imdb.views import UserViewSet, GroupViewSet
+
 from rest_framework import routers
-import settings
+
 from imdb import views
-from django.views.generic import TemplateView
+
 # Routers provide an easy way of automatically determining the URL conf
-# router = routers.DefaultRouter()
-# router.register(r'users', UserViewSet)
-# router.register(r'groups', GroupViewSet)
+router = routers.DefaultRouter()
+router.register(r'users', views.UserViewSet)
+router.register(r'movies', views.MovieViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
-urlpatterns = [
+urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    # url(r'^users/', views.UserViewSet.as_view(), name='users-list'),
-    url(r'^movies/',include("imdb.urls")),
-    # url(r'^$', template_name),
-    # url(r'^',include(router.urls)),
-    url(r'^$', TemplateView.as_view(template_name='index.html'), name="home"),
+    url(r'^',include(router.urls)),
 
     # Login and Logout views for our api
-    # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # url(r'^snippets/', include("snippet.urls", namespace="snippet")),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     
-]
-# if settings.DEBUG:
-#     urlpatterns += url(
-#         r'^$', 'django.contrib.staticfiles.views.serve', kwargs={
-#             'path': 'templates/index.html', 'document_root': settings.STATIC_ROOT}),
+)

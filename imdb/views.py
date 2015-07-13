@@ -1,43 +1,18 @@
-# from django.shortcuts import render
-# from django.http import HttpResponse
-from django.views.generic import TemplateView
-
 from imdb.models import Movie
-from imdb.serializers import MovieSerializer, NewMovieSerializer
+from imdb.serializers import MovieSerializer, UserSerializer
 from imdb.permissions import IsOwnerOrReadOnly
 
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import detail_route
 from rest_framework.response import Response 
-from rest_framework.reverse import reverse
 from rest_framework import renderers
 from rest_framework import viewsets
 
 from django.contrib.auth.models import User
-from imdb.serializers import UserSerializer
 # Create your views here.
 
-@api_view(('GET',))
-def api_root(request, format=None):
-	return Response({
-		# 'users': reverse('user-list', request=request, format=format),
-		'movies': reverse('movies-list', request=request, format=format),
-		# 'movieList' : reverse('movie-instance', request=request, format=format),
-
-		})
-class IndexView(generics.ListCreateAPIView):
-	template_name = 'index.html'
-	queryset = Movie.objects.all()		
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
- 	serializer_class = MovieSerializer
-	renderers_classes = (renderers.StaticHTMLRenderer,)
-
-
-	def perform_create(self, serializer):
-		serializer.save(owner=self.request.user)
-
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
 	"""
 	API endpoints that allows users to be viewed or edited.
 	"""
@@ -45,29 +20,23 @@ class UserViewSet(viewsets.ModelViewSet):
 	queryset = User.objects.all()
 	serializer_class = UserSerializer
 
-# class GroupViewSet(viewsets.ModelViewSet):
-# 	"""
-# 	API endpoints that allows groups to be viewed or edited.
-# 	"""
-	
-# 	queryset = Group.objects.all()
-# 	serializer_class = GroupSerializer
-
-class MovieInstanceView(generics.RetrieveUpdateDestroyAPIView):
+class MovieViewSet(viewsets.ModelViewSet):
 	"""
-	Returns a single movie.
-	Also allows updating and deleting
+	This viewset automatically provides `list`, `Create, `retrieve`,
+	`update` and `destroy` actions.
+
+	Additionally we also provide an extra `show` action.
 	"""
 	queryset = Movie.objects.all()
-	permissions_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
 	serializer_class = MovieSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
 
-class MovieHighlight(generics.GenericAPIView):
-	template_name = 'index.html'
-	queryset = Movie.objects.all()
-	renderers_classes = (renderers.StaticHTMLRenderer,)
-	serializer_class = NewMovieSerializer
-
-	def get(self, request, *args, **kwargs):
+	@detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+	def trailer(self, request, *args, **kwargs):
 		movie = self.get_object()
-		return Response({'name':movie.name, 'directorName':movie.directorName}, template_name='index.html')
+		return Response(
+			movie.name
+			)
+
+	def perform_create(self, serializer):
+		serializer.save(owner=self.request.user)

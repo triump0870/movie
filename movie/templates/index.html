@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("button").click(function(){
+        $.get("http://localhost:8000/movies/", function(data, status){
+            // alert("Data: " + data + "\nStatus: " + status);
+            console.log(data.results[0].popularity);
+            
+        });
+    });
+});
+</script>
+</head>
+<body>
+
+<button>Send an HTTP GET request to a page and get the result back</button>
+<header></header>
+
+</body>
+</html
