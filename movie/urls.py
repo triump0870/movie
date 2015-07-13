@@ -17,10 +17,11 @@ from django.conf.urls import include, url
 from django.contrib import admin
 # from imdb.views import UserViewSet, GroupViewSet
 from rest_framework import routers
-
-
+import settings
+from imdb import views
+from django.views.generic import TemplateView
 # Routers provide an easy way of automatically determining the URL conf
-router = routers.DefaultRouter()
+# router = routers.DefaultRouter()
 # router.register(r'users', UserViewSet)
 # router.register(r'groups', GroupViewSet)
 
@@ -28,9 +29,18 @@ router = routers.DefaultRouter()
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^movie/',include("imdb.urls", namespace='movie')),
-    url(r'^',include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    # url(r'^users/', views.UserViewSet.as_view(), name='users-list'),
+    url(r'^movies/',include("imdb.urls")),
+    # url(r'^$', template_name),
+    # url(r'^',include(router.urls)),
+    url(r'^$', TemplateView.as_view(template_name='index.html'), name="home"),
+
+    # Login and Logout views for our api
+    # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     # url(r'^snippets/', include("snippet.urls", namespace="snippet")),
     
 ]
+# if settings.DEBUG:
+#     urlpatterns += url(
+#         r'^$', 'django.contrib.staticfiles.views.serve', kwargs={
+#             'path': 'templates/index.html', 'document_root': settings.STATIC_ROOT}),

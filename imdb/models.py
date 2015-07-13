@@ -5,7 +5,7 @@ class Genre(models.Model):
 	title = models.CharField(max_length=30)
 
 	def __unicode__(self):
-		return u'%s'%(self.title)
+		return self.title
 
 # class Director(models.Model):
 # 	"""

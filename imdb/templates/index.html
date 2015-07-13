@@ -1,7 +1,21 @@
-{% extends "_layouts/base.html" %}
-{% block title %}Movie Page{% endblock %}
-{% block content %}
-	{% for movie in movie_list %}
-	<a href="{{ movie.get_absolute_url }}">{{movie.name}}</a>
-	{% endfor%}
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("button").click(function(){
+        $.get("http://localhost:8000/movies/", function(data, status){
+            // alert("Data: " + data + "\nStatus: " + status);
+            $.console.log( "You clicked a paragraph!");
+        });
+    });
+});
+</script>
+</head>
+<body>
+
+<button>Send an HTTP GET request to a page and get the result back</button>
+
+</body>
+</html>
