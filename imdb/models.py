@@ -5,17 +5,7 @@ class Genre(models.Model):
 	title = models.CharField(max_length=30)
 
 	def __unicode__(self):
-		return u'%s'%(self.title)
-
-# class Director(models.Model):
-# 	"""
-# 	It holds the director informations.
-# 	"""
-# 	name = models.CharField(max_length=40)
-
-# 	def __unicode__(self):
-# 		# return u'%s'%(self.name)
-# 		return self.name
+		return u'%s'%self.title
 		
 class Movie(models.Model):
 	"""Movie objects"""

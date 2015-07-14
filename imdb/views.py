@@ -1,45 +1,51 @@
-# from django.shortcuts import render
-# from django.http import HttpResponse
-from django.views.generic import TemplateView
 from imdb.models import Movie
-from imdb.serializers import MovieSerializer
+from imdb.serializers import MovieSerializer, UserSerializer
+from imdb.permissions import IsOwnerOrReadOnly
+from imdb.forms import MovieFilter
+
 from rest_framework import generics
 from rest_framework import permissions
-from imdb.permissions import IsOwnerOrReadOnly
-# from rest_framework import viewsets
-# from django.contrib.auth.models import User, Group
-# from imdb.serializers import UserSerializer, GroupSerializer
+from rest_framework.decorators import detail_route
+from rest_framework.response import Response 
+from rest_framework import renderers
+from rest_framework import viewsets
+
+from django.contrib.auth.models import User
 # Create your views here.
 
-class IndexView(generics.ListCreateAPIView):
-	template_name = 'index.html'
-	queryset = Movie.objects.all()		
-	permissions_classes = (permissions.IsAuthenticatedOrReadOnly,)
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+	"""
+	This endpoint presents the users in the system.
+	As you can see, the collection of movie instances owned by a user are
+	serialized using a hyperlinked representation.
+	"""
+
+	queryset = User.objects.all()
+	serializer_class = UserSerializer
+
+class MovieViewSet(viewsets.ModelViewSet):
+	"""
+	This endpoint presents movie instances.
+
+    The `trailer` field presents a hyperlink to the trailer page which is a
+    HTMLrepresentation of the youtube trailer.
+
+    The **owner** of the movie may update or delete instances
+    of the movie.
+	"""
+	queryset = Movie.objects.all()
 	serializer_class = MovieSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
+	filter_class = MovieFilter
+	search_field = ('name', 'directorName','genre',)
+	ordering_field = ('releaseDate', 'name',)
+
+	@detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+	def trailer(self, request, *args, **kwargs):
+		movie = self.get_object()
+		return Response(
+			movie.name
+			)
 
 	def perform_create(self, serializer):
 		serializer.save(owner=self.request.user)
-# class UserViewSet(viewsets.ModelViewSet):
-# 	"""
-# 	API endpoints that allows users to be viewed or edited.
-# 	"""
-
-# 	queryset = User.objects.all()
-# 	serializer_class = UserSerializer
-
-# class GroupViewSet(viewsets.ModelViewSet):
-# 	"""
-# 	API endpoints that allows groups to be viewed or edited.
-# 	"""
-	
-# 	queryset = Group.objects.all()
-# 	serializer_class = GroupSerializer
-
-class MovieInstanceView(generics.RetrieveUpdateDestroyAPIView):
-	"""
-	Returns a single movie.
-	Also allows updating and deleting
-	"""
-	queryset = Movie.objects.all()
-	permissions_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
-	serializer_class = MovieSerializer

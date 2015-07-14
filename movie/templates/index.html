@@ -7,7 +7,8 @@ $(document).ready(function(){
     $("button").click(function(){
         $.get("http://localhost:8000/movies/", function(data, status){
             // alert("Data: " + data + "\nStatus: " + status);
-            $.console.log( "You clicked a paragraph!");
+            console.log(data.results[0].popularity);
+            
         });
     });
 });
@@ -16,6 +17,7 @@ $(document).ready(function(){
 <body>
 
 <button>Send an HTTP GET request to a page and get the result back</button>
+<header></header>
 
 </body>
-</html>
+</html

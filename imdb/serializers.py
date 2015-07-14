@@ -1,33 +1,30 @@
-# from django.contrib.auth.models import User, Group
-from rest_framework import serializers
-from .models import Movie, Genre
+from django.contrib.auth.models import User
 from django.utils import six
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _ # To make the error message translatable
+
+from rest_framework import serializers
+
+from .models import Movie, Genre
+
 # serializers define the API representation.
-# class UserSerializer(serializers.HyperlinkedModelSerializer):
-# 	class Meta:
-# 		model = User
-# 		fields = ('url', 'username', 'email', 'groups', 'is_staff')
-
-# # serializer for user Group
-# class GroupSerializer(serializers.HyperlinkedModelSerializer):
-# 	class Meta:
-# 		model = Group
-# 		fields = ('url', 'name')
-
-class MyPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
 	"""
-	Overrides to_representation() method.
+	API serializer for Users.
 	"""
+	movies = serializers.HyperlinkedRelatedField(queryset=Movie.objects.all(), view_name='movie-detail', many=True)
+	class Meta:
+		model = User
+		fields = ('url', 'username', 'movies')
 
-	def to_representation(self, value):
-		return str(value) # Now returns the string representation instead of pk
-
-class MovieSerializer(serializers.ModelSerializer):
+class MovieSerializer(serializers.HyperlinkedModelSerializer):
 	"""
-	Serialiazing all the Movies.
+	API serializer for Movie.
 	"""
-	genre = MyPrimaryKeyRelatedField(many=True, queryset=Genre.objects.all())
 	owner = serializers.ReadOnlyField(source='owner.username')
+	trailer = serializers.HyperlinkedIdentityField(view_name='movie-trailer', format='html')
+	genre = serializers.SlugRelatedField(queryset=Genre.objects.all(), slug_field='title', many=True)
+
 	class Meta:
 		model = Movie
-		fields = ('popularity','directorName', 'genre','imdbScore','name','owner')
+		fields = ('url','name','directorName', 'genre','trailer','imdbScore','popularity','releaseDate','owner')
