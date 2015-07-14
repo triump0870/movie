@@ -1,6 +1,7 @@
 from imdb.models import Movie
 from imdb.serializers import MovieSerializer, UserSerializer
 from imdb.permissions import IsOwnerOrReadOnly
+from imdb.forms import MovieFilter
 
 from rest_framework import generics
 from rest_framework import permissions
@@ -14,7 +15,9 @@ from django.contrib.auth.models import User
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
 	"""
-	API endpoints that allows users to be viewed or edited.
+	This endpoint presents the users in the system.
+	As you can see, the collection of movie instances owned by a user are
+	serialized using a hyperlinked representation.
 	"""
 
 	queryset = User.objects.all()
@@ -22,14 +25,20 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 class MovieViewSet(viewsets.ModelViewSet):
 	"""
-	This viewset automatically provides `list`, `Create, `retrieve`,
-	`update` and `destroy` actions.
+	This endpoint presents movie instances.
 
-	Additionally we also provide an extra `show` action.
+    The `trailer` field presents a hyperlink to the trailer page which is a
+    HTMLrepresentation of the youtube trailer.
+
+    The **owner** of the movie may update or delete instances
+    of the movie.
 	"""
 	queryset = Movie.objects.all()
 	serializer_class = MovieSerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
+	filter_class = MovieFilter
+	search_field = ('name', 'directorName','genre',)
+	ordering_field = ('releaseDate', 'name',)
 
 	@detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
 	def trailer(self, request, *args, **kwargs):

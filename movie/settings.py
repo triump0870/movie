@@ -49,6 +49,7 @@ LOCAL_APPS = (
 
 THIRD_PARTY_APPS = (
     'rest_framework',
+    'django_filters',
     )
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
@@ -142,5 +143,6 @@ TEMPLATE_lOADER = (
 # configuration dictionary named REST_FRAMEWORK.
 
 REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
     'PAGINATE_BY': 2,
 }
