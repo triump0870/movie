@@ -7,21 +7,17 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('imdb', '0004_auto_20150712_1804'),
+        ('imdb', '0002_auto_20150714_1524'),
     ]
 
     operations = [
         migrations.RemoveField(
             model_name='movie',
-            name='directorName',
+            name='genre',
         ),
         migrations.AddField(
             model_name='movie',
-            name='directorName',
-            field=models.CharField(default=1, max_length=140),
-            preserve_default=False,
-        ),
-        migrations.DeleteModel(
-            name='Director',
+            name='genre',
+            field=models.ManyToManyField(to='imdb.Genre'),
         ),
     ]
